@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Varellin | Web Pribadi</title>
+<script>(function(){var t;try{t=localStorage.getItem('vr_theme')}catch(e){}if(t!=='dark'&&t!=='light')t=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.dataset.theme=t})();</script>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;--bg:#f2f3f0;--ink:#15151a;--sf:#fff;--sf2:#e4e6ea;--tx:#15151a;--mu:#5b5f6b;--ac:#2f4bff;--onac:#fff;--hl:#ffe14d;--ok:#b7f0c6;--bad:#ffb4b9;--dot:#d2d5db;--late:#c4161f;--soon:#9a5b00;--fine:#12703f;--r:6px;--bd:2.5px solid var(--ink)}
+:root[data-theme=dark]{color-scheme:dark;--bg:#1c1f2a;--ink:#0a0c12;--sf:#272b39;--sf2:#2f3446;--tx:#ecebe6;--mu:#a3a8ba;--ac:#7b8cff;--onac:#10131c;--hl:#f2d24a;--dot:#272b38;--late:#ff8a93;--soon:#ffc266;--fine:#6ee0a0}
+*{box-sizing:border-box;margin:0}
+body{font:16px/1.6 'Bricolage Grotesque',system-ui,sans-serif;color:var(--tx);min-height:100vh;background:var(--bg) radial-gradient(var(--dot) 1.3px,transparent 1.5px) 0 0/14px 14px}
+a{color:var(--ac)}
+:focus-visible{outline:3px solid var(--ac);outline-offset:3px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:var(--bd)}
+nav{max-width:960px;margin:auto;display:flex;gap:6px;padding:10px 16px;overflow-x:auto;align-items:center}
+nav b{margin-right:auto;background:var(--tx);color:var(--bg);padding:2px 12px;border-radius:4px;transform:rotate(-2deg);font-weight:800;white-space:nowrap}
+button,input,select{font:inherit;color:inherit}
+.tab,.tgl{background:none;border:var(--bd);border-color:transparent;padding:4px 14px;border-radius:4px;cursor:pointer;white-space:nowrap;font-weight:700}
+.tab:hover,.tgl:hover{border-color:var(--mu)}
+.tab[aria-selected=true]{background:var(--hl);border-color:var(--ink);color:#15151a}
+main{max-width:960px;margin:auto;padding:28px 16px 60px}
+section[hidden]{display:none}
+h1{font-size:clamp(3.4rem,14vw,8rem);line-height:.9;font-weight:800;letter-spacing:-.045em}
+h2{font-size:2rem;line-height:1.1;font-weight:800;letter-spacing:-.02em;margin-bottom:16px}
+h3{font-size:1.15rem;line-height:1.25;font-weight:700}
+.mu{color:var(--mu)}
+.hero{position:relative;padding:64px 0 28px}
+.hero::before{content:"";position:absolute;right:-30px;top:10px;width:min(52vw,320px);aspect-ratio:1;border-radius:50%;background:radial-gradient(var(--ac) 2.4px,transparent 3px) 0 0/11px 11px;opacity:.85;z-index:-1}
+.bubble{display:inline-block;position:relative;background:var(--sf);border:var(--bd);border-radius:18px;padding:2px 18px;font-weight:800;font-size:1.3rem;transform:rotate(-4deg);margin-bottom:18px}
+.bubble::after{content:"";position:absolute;left:22px;bottom:-11px;width:16px;height:16px;background:var(--sf);border-right:var(--bd);border-bottom:var(--bd);transform:rotate(45deg)}
+.hero p{max-width:50ch;margin:22px 0;font-size:1.1rem}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.card{background:var(--sf);border:var(--bd);border-radius:var(--r);box-shadow:4px 4px 0 var(--ink);padding:16px;text-align:left;width:100%}
+button.card{cursor:pointer}
+button.card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.btn{background:var(--ac);color:var(--onac);border:var(--bd);border-radius:var(--r);box-shadow:3px 3px 0 var(--ink);padding:6px 16px;font-weight:700;cursor:pointer}
+.btn:active{transform:translate(3px,3px);box-shadow:none}
+.btn.alt{background:var(--sf);color:var(--tx)}
+.btn.sm{padding:0 10px;font-size:.85rem;box-shadow:2px 2px 0 var(--ink)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.chip{background:var(--sf);border:2px solid var(--ink);border-radius:4px;padding:0 10px;font-size:.88rem;font-weight:700}
+.star{display:inline-block;color:#15151a;background:var(--hl);border:2px solid var(--ink);border-radius:4px;padding:0 8px;font-weight:800;font-size:.9rem;transform:rotate(-2deg);margin-top:6px}
+form.row{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:22px}
+input,select{background:var(--sf);border:var(--bd);border-radius:var(--r);padding:7px 12px;width:100%}
+ul{list-style:none;padding:0;display:grid;gap:12px}
+li.task{display:flex;gap:12px;align-items:center;background:var(--sf);border:var(--bd);border-radius:var(--r);box-shadow:3px 3px 0 var(--ink);padding:12px 14px}
+li.task.done{opacity:.55;box-shadow:none}
+li.task.done .t{text-decoration:line-through}
+li.task .t{flex:1}
+li.task input[type=checkbox]{width:22px;height:22px;accent-color:var(--ac)}
+.late,.soon,.fine{font-weight:800}
+.late{color:var(--late)}.soon{color:var(--soon)}.fine{color:var(--fine)}
+.days{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));margin-top:10px}
+.days .card.today{background:var(--hl);color:#15151a}.days .card.today .mu{color:#3d4150}
+.days p{font-size:.92rem;margin-top:6px}
+.sub{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px}
+.box{background:var(--sf);border:var(--bd);border-radius:var(--r);box-shadow:5px 5px 0 var(--ink);padding:22px;max-width:520px}
+.msg{min-height:1.6em;margin:12px 0;font-weight:700}
+.pick{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.pick .btn{font-size:1.6rem;padding:6px 18px}
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:380px;margin-top:14px}
+.mem button{aspect-ratio:1;font-size:2rem;background:var(--sf);border:var(--bd);border-radius:var(--r);cursor:pointer;font-weight:800}
+.mem button.on{background:var(--hl);color:#15151a}
+.mem button.ok{background:var(--ok);color:#15151a}
+.opt{display:block;width:100%;text-align:left;margin-top:10px}
+dialog{background:var(--sf);color:var(--tx);border:var(--bd);border-radius:var(--r);box-shadow:8px 8px 0 var(--ink);padding:24px;max-width:480px;width:calc(100% - 32px)}
+dialog::backdrop{background:rgba(21,21,26,.55)}
+#userBar{display:flex;gap:8px;align-items:center}#userBar[hidden]{display:none}#who{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.85rem}
+footer{text-align:center;color:var(--mu);padding:24px;font-size:.9rem}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes pop{from{opacity:0;transform:scale(.92)}}
+@keyframes bub{from{opacity:0;transform:scale(.4) rotate(-14deg)}}
+@keyframes flip{from{transform:rotateY(90deg)}}
+@media (prefers-reduced-motion:no-preference){
+html{scroll-behavior:smooth}
+button.card,.btn{transition:transform .12s,box-shadow .12s}
+.tab,.tgl{transition:background-color .2s,border-color .2s}
+main>section:not([hidden]){animation:rise .35s ease-out backwards}
+.hero>*{animation:rise .6s cubic-bezier(.2,.7,.2,1) backwards}
+.hero>.bubble{animation:bub .55s cubic-bezier(.3,1.5,.5,1) backwards}
+.hero>:nth-child(2){animation-delay:.1s}.hero>:nth-child(3){animation-delay:.2s}.hero>:nth-child(4){animation-delay:.3s}
+.grid>*{animation:rise .45s ease-out backwards}
+.grid>:nth-child(2){animation-delay:.06s}.grid>:nth-child(3){animation-delay:.12s}.grid>:nth-child(4){animation-delay:.18s}.grid>:nth-child(5){animation-delay:.24s}.grid>:nth-child(n+6){animation-delay:.3s}
+dialog[open]{animation:pop .22s ease-out}
+dialog[open]::backdrop{animation:pop .22s ease-out}
+.box{animation:pop .3s ease-out backwards}
+.mem button.on,.mem button.ok{animation:flip .28s ease-out}
+.opt{animation:rise .3s ease-out backwards}
+li.task{animation:pop .22s ease-out backwards}
+.swap,.swap *{transition:background-color .35s,color .35s,border-color .35s,box-shadow .35s!important}
+}
+</style>
+</head>
+<body>
+<header><nav role="tablist" aria-label="Menu">
+  <b>Varellin</b>
+  <button class="tab" role="tab" data-t="beranda">Beranda</button>
+  <button class="tab" role="tab" data-t="anime">Anime</button>
+  <button class="tab" role="tab" data-t="tugas">Tugas</button>
+  <button class="tab" role="tab" data-t="game">Game</button>
+  <button class="tgl" id="theme" aria-label="Ganti tema terang atau gelap"></button>
+  <span id="userBar" hidden><span id="who"></span><button class="btn alt sm" id="logout">Keluar</button></span>
+</nav></header>
+
+<main>
+<!-- BERANDA -->
+<section id="beranda">
+  <div class="hero">
+    <div class="bubble">Halo!</div>
+    <h1>Aku Varellin.</h1>
+    <p class="mu">Mahasiswa D-III Teknologi Informasi, Politeknik Negeri Madiun. Web ini tempat aku nyimpen hal yang aku suka dan hal yang kepake tiap hari: katalog anime, pencatat deadline tugas, dan game kecil buat refreshing.</p>
+    <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">Python</span></div>
+  </div>
+  <div class="grid" style="margin-top:24px">
+    <button class="card" data-go="anime"><h3>Katalog Anime</h3><p class="mu">Sinopsis, karakter, dan rating pribadiku.</p></button>
+    <button class="card" data-go="tugas"><h3>Jadwal &amp; Deadline</h3><p class="mu">Biar gak ada tugas yang kelewat.</p></button>
+    <button class="card" data-go="game"><h3>Game Mini</h3><p class="mu">Tebak angka, suit, memory, dan kuis.</p></button>
+  </div>
+</section>
+
+<!-- ANIME -->
+<section id="anime" hidden>
+  <h2>Katalog Anime</h2>
+  <p class="mu" style="margin-bottom:16px">Klik kartu buat lihat sinopsis dan karakter. Ganti isinya di array <code>ANIME</code> di bagian script.</p>
+  <div class="grid" id="animeGrid"></div>
+  <dialog id="dlg"><div id="dlgBody"></div><div style="margin-top:16px"><button class="btn alt" id="dlgClose">Tutup</button></div></dialog>
+</section>
+
+<!-- TUGAS -->
+<section id="tugas" hidden>
+  <div id="tugasLogin" class="box">
+    <h3>Masuk dulu ya</h3>
+    <p class="mu" style="margin:6px 0 14px">Tugas dan jadwal disimpan di akunmu sendiri. Orang lain nggak bisa melihatnya.</p>
+    <form id="fAuth" style="display:grid;gap:10px">
+      <input id="aEmail" type="email" placeholder="Email" required autocomplete="email" aria-label="Email">
+      <input id="aPass" type="password" placeholder="Password (min. 6 karakter)" required minlength="6" autocomplete="current-password" aria-label="Password">
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-mode="masuk">Masuk</button><button class="btn alt" data-mode="daftar">Daftar akun baru</button><button type="button" class="btn alt" id="gLogin">Masuk dengan Google</button></div>
+    </form>
+    <div class="msg late" id="aMsg" aria-live="polite"></div>
+  </div>
+  <div id="tugasApp" hidden>
+  <h2>Tracker Deadline</h2>
+  <form class="row" id="fTask">
+    <input name="mk" placeholder="Mata kuliah" required aria-label="Mata kuliah">
+    <input name="nama" placeholder="Nama tugas" required aria-label="Nama tugas">
+    <input name="due" type="date" required aria-label="Tanggal deadline">
+    <button class="btn">Tambah tugas</button>
+  </form>
+  <ul id="taskList"></ul>
+
+  <h2 style="margin-top:40px">Jadwal Kuliah</h2>
+  <form class="row" id="fJadwal">
+    <select name="hari" aria-label="Hari"><option>Senin</option><option>Selasa</option><option>Rabu</option><option>Kamis</option><option>Jumat</option><option>Sabtu</option></select>
+    <input name="jam" placeholder="Jam (08.00-10.00)" required aria-label="Jam">
+    <input name="mk" placeholder="Mata kuliah" required aria-label="Mata kuliah">
+    <input name="ruang" placeholder="Ruang / lab" aria-label="Ruang">
+    <button class="btn">Tambah jadwal</button>
+  </form>
+  <div class="days" id="days"></div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game" hidden>
+  <h2>Game Mini</h2>
+  <div class="sub" id="gameTabs">
+    <button class="btn" data-g="tebak">Tebak angka</button>
+    <button class="btn alt" data-g="suit">Suit</button>
+    <button class="btn alt" data-g="memory">Memory card</button>
+    <button class="btn alt" data-g="quiz">Kuis TI</button>
+  </div>
+
+  <div class="box" id="g-tebak">
+    <h3>Tebak angka 1 sampai 100</h3>
+    <p class="mu">Kamu punya 7 kesempatan.</p>
+    <div class="msg" id="tMsg" aria-live="polite"></div>
+    <form id="fTebak" style="display:flex;gap:8px"><input id="tIn" type="number" min="1" max="100" required aria-label="Tebakanmu"><button class="btn">Tebak</button></form>
+    <button class="btn alt sm" id="tReset" style="margin-top:12px">Main lagi</button>
+  </div>
+
+  <div class="box" id="g-suit" hidden>
+    <h3>Batu Gunting Kertas</h3>
+    <div class="pick" id="suitPick"></div>
+    <div class="msg" id="sMsg" aria-live="polite">Pilih salah satu.</div>
+    <p class="mu" id="sScore">Menang 0 | Seri 0 | Kalah 0</p>
+  </div>
+
+  <div class="box" id="g-memory" hidden>
+    <h3>Memory card</h3>
+    <p class="mu" id="mInfo">Langkah: 0</p>
+    <div class="mem" id="memGrid"></div>
+    <button class="btn alt sm" id="mReset" style="margin-top:14px">Acak ulang</button>
+  </div>
+
+  <div class="box" id="g-quiz" hidden>
+    <h3>Kuis dasar TI</h3>
+    <div id="qBox"></div>
+  </div>
+</section>
+</main>
+<footer>Dibuat sendiri oleh Varellin. Data tugas &amp; jadwal tersimpan di akun masing-masing.</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ====== Helper ====== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
+const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+
+/* ====== Navigasi ====== */
+const tabs=$$('.tab');
+function show(id){
+  if(!$('#'+id))id='beranda';
+  $$('main > section').forEach(s=>s.hidden=s.id!==id);
+  tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.t===id));
+  history.replaceState(null,'','#'+id);scrollTo(0,0);
+}
+tabs.forEach(t=>t.onclick=()=>show(t.dataset.t));
+$$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+show(location.hash.slice(1)||'beranda');
+
+/* ====== Tema terang / gelap ====== */
+const themeBtn=$('#theme'),root=document.documentElement;
+const themeLabel=()=>themeBtn.textContent=root.dataset.theme==='dark'?'Mode terang':'Mode gelap';
+themeBtn.onclick=()=>{
+  const t=root.dataset.theme==='dark'?'light':'dark';
+  root.classList.add('swap');root.dataset.theme=t;themeLabel();
+  try{localStorage.setItem('vr_theme',t)}catch(e){}
+  setTimeout(()=>root.classList.remove('swap'),450);
+};
+themeLabel();
+
+/* ====== Katalog Anime (EDIT DI SINI) ====== */
+const ANIME=[
+ {judul:"That Time I Got Reincarnated as a Slime",tahun:2018,genre:"Isekai, Fantasi",rating:9,
+  sinopsis:"Satoru Mikami, pegawai biasa yang meninggal, terlahir kembali sebagai slime di dunia lain dan perlahan membangun negeri monster bersama kawan-kawannya.",
+  karakter:["Rimuru Tempest","Veldora","Shuna","Benimaru"]},
+ {judul:"Sousou no Frieren",tahun:2023,genre:"Fantasi, Drama",rating:10,
+  sinopsis:"Setelah party pahlawan mengalahkan Raja Iblis, penyihir elf Frieren menyadari betapa singkatnya waktu manusia dan memulai perjalanan memahami mereka.",
+  karakter:["Frieren","Fern","Stark","Himmel"]},
+ {judul:"Spy x Family",tahun:2022,genre:"Komedi, Aksi",rating:8,
+  sinopsis:"Mata-mata, pembunuh bayaran, dan anak telepat pura-pura jadi keluarga demi misi rahasia, tanpa saling tahu identitas asli.",
+  karakter:["Loid Forger","Yor Forger","Anya Forger","Bond"]}
+];
+$('#animeGrid').innerHTML=ANIME.map((a,i)=>`<button class="card" data-i="${i}"><h3>${esc(a.judul)}</h3><p class="mu">${esc(a.genre)} (${a.tahun})</p><p class="star">Rating ${a.rating}/10</p></button>`).join('');
+$$('#animeGrid .card').forEach(b=>b.onclick=()=>{
+  const a=ANIME[b.dataset.i];
+  $('#dlgBody').innerHTML=`<h3>${esc(a.judul)}</h3><p class="star">Rating pribadi: ${a.rating}/10</p><p style="margin:12px 0">${esc(a.sinopsis)}</p><p class="mu">Karakter:</p><div class="chips" style="margin-top:6px">${a.karakter.map(k=>`<span class="chip">${esc(k)}</span>`).join('')}</div>`;
+  $('#dlg').showModal();
+});
+$('#dlgClose').onclick=()=>$('#dlg').close();
+
+/* ====== Tracker Tugas ====== */
+let tasks=[];
+function renderTasks(){
+  const list=[...tasks].sort((a,b)=>a.done-b.done||a.due.localeCompare(b.due));
+  const today=new Date();today.setHours(0,0,0,0);
+  $('#taskList').innerHTML=list.length?list.map(t=>{
+    const d=Math.round((new Date(t.due+'T00:00:00')-today)/864e5);
+    const [txt,cls]=t.done?['Selesai','fine']:d<0?[`Telat ${-d} hari`,'late']:d===0?['Hari ini','soon']:d<=3?[`${d} hari lagi`,'soon']:[`${d} hari lagi`,'fine'];
+    return `<li class="task ${t.done?'done':''}"><input type="checkbox" style="width:auto" ${t.done?'checked':''} data-done="${t.id}" aria-label="Tandai selesai"><div class="t"><b>${esc(t.nama)}</b><div class="mu">${esc(t.mk)} | ${t.due}</div></div><span class="${cls}">${txt}</span><button class="btn alt sm" data-del="${t.id}" aria-label="Hapus tugas">Hapus</button></li>`;
+  }).join(''):'<p class="mu">Belum ada tugas. Tambah lewat form di atas.</p>';
+}
+$('#fTask').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);
+  tasks.push({id:Date.now(),mk:f.get('mk'),nama:f.get('nama'),due:f.get('due'),done:false});
+  persist();e.target.reset();renderTasks();};
+$('#taskList').onclick=e=>{
+  const d=e.target.dataset;
+  if(d.done){const t=tasks.find(x=>x.id==d.done);t.done=!t.done;}
+  else if(d.del){tasks=tasks.filter(x=>x.id!=d.del);}
+  else return;
+  persist();renderTasks();
+};
+renderTasks();
+
+/* ====== Jadwal Kuliah ====== */
+const HARI=['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+let jadwal=[];
+function renderJadwal(){
+  const hariIni=['Minggu',...HARI][new Date().getDay()];
+  $('#days').innerHTML=HARI.map(h=>{
+    const items=jadwal.filter(j=>j.hari===h).sort((a,b)=>a.jam.localeCompare(b.jam));
+    return `<div class="card ${h===hariIni?'today':''}"><h3>${h}${h===hariIni?' (hari ini)':''}</h3>${items.length?items.map(j=>`<p><b>${esc(j.jam)}</b> ${esc(j.mk)}${j.ruang?` <span class="mu">| ${esc(j.ruang)}</span>`:''} <button class="btn alt sm" data-jdel="${j.id}" aria-label="Hapus jadwal">x</button></p>`).join(''):'<p class="mu">Kosong</p>'}</div>`;
+  }).join('');
+}
+$('#fJadwal').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);
+  jadwal.push({id:Date.now(),hari:f.get('hari'),jam:f.get('jam'),mk:f.get('mk'),ruang:f.get('ruang')});
+  persist();e.target.reset();renderJadwal();};
+$('#days').onclick=e=>{const id=e.target.dataset.jdel;if(!id)return;jadwal=jadwal.filter(j=>j.id!=id);persist();renderJadwal();};
+renderJadwal();
+
+/* ====== Game: pindah tab ====== */
+$$('#gameTabs button').forEach(b=>b.onclick=()=>{
+  $$('#gameTabs button').forEach(x=>x.className='btn alt');b.className='btn';
+  ['tebak','suit','memory','quiz'].forEach(g=>$('#g-'+g).hidden=g!==b.dataset.g);
+});
+
+/* ====== Game: Tebak angka ====== */
+let secret,tries;
+function tReset(){secret=1+Math.floor(Math.random()*100);tries=7;$('#tMsg').textContent='Aku udah pilih angka. Silakan tebak.';$('#tIn').value='';$('#tIn').disabled=false;}
+$('#fTebak').onsubmit=e=>{e.preventDefault();
+  const g=+$('#tIn').value;tries--;
+  if(g===secret){$('#tMsg').textContent=`Benar! Angkanya ${secret}.`;$('#tIn').disabled=true;}
+  else if(tries===0){$('#tMsg').textContent=`Kesempatan habis. Angkanya ${secret}.`;$('#tIn').disabled=true;}
+  else $('#tMsg').textContent=`${g<secret?'Terlalu kecil':'Terlalu besar'}. Sisa ${tries} kesempatan.`;
+  $('#tIn').value='';};
+$('#tReset').onclick=tReset;tReset();
+
+/* ====== Game: Suit ====== */
+const OPS=[['Batu','🪨'],['Gunting','✂️'],['Kertas','📄']];
+const sc={m:0,s:0,k:0};
+$('#suitPick').innerHTML=OPS.map((o,i)=>`<button class="btn" data-s="${i}" aria-label="${o[0]}">${o[1]}</button>`).join('');
+$('#suitPick').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  const me=+b.dataset.s,cp=Math.floor(Math.random()*3),r=(me-cp+3)%3;
+  if(r===0)sc.s++;else if(r===2)sc.m++;else sc.k++;
+  $('#sMsg').textContent=`Kamu ${OPS[me][1]} vs komputer ${OPS[cp][1]}: ${r===0?'Seri':r===2?'Kamu menang!':'Kamu kalah'}`;
+  $('#sScore').textContent=`Menang ${sc.m} | Seri ${sc.s} | Kalah ${sc.k}`;
+};
+
+/* ====== Game: Memory card ====== */
+let mOpen=[],mMoves=0,mLock=false;
+function mInit(){
+  const em=['🐱','🚀','🎧','🍜','⚡','🌸','🎮','☕'];
+  const deck=[...em,...em].sort(()=>Math.random()-.5);
+  mOpen=[];mMoves=0;mLock=false;$('#mInfo').textContent='Langkah: 0';
+  $('#memGrid').innerHTML=deck.map((c,i)=>`<button data-c="${c}" data-i="${i}" aria-label="Kartu tertutup">?</button>`).join('');
+}
+$('#memGrid').onclick=e=>{
+  const b=e.target.closest('button');
+  if(!b||mLock||b.classList.contains('on')||b.classList.contains('ok'))return;
+  b.classList.add('on');b.textContent=b.dataset.c;mOpen.push(b);
+  if(mOpen.length<2)return;
+  mMoves++;$('#mInfo').textContent='Langkah: '+mMoves;
+  const [x,y]=mOpen;
+  if(x.dataset.c===y.dataset.c){x.className=y.className='ok';mOpen=[];
+    if($$('#memGrid .ok').length===16)$('#mInfo').textContent=`Selesai dalam ${mMoves} langkah!`;}
+  else{mLock=true;setTimeout(()=>{[x,y].forEach(k=>{k.className='';k.textContent='?'});mOpen=[];mLock=false;},800);}
+};
+$('#mReset').onclick=mInit;mInit();
+
+/* ====== Game: Kuis ====== */
+const QS=[
+ {q:"Singkatan dari HTML?",o:["HyperText Markup Language","High Tech Modern Language","Hyper Transfer Mark Line"],a:0},
+ {q:"Fungsi utama CSS?",o:["Mengatur tampilan halaman","Menyimpan database","Menjalankan server"],a:0},
+ {q:"Hasil dari 7 % 3 di Python?",o:["2","1","3"],a:1},
+ {q:"Tipe data yang nilainya tidak bisa diubah setelah dibuat?",o:["List","Dictionary","Tuple"],a:2},
+ {q:"Perintah Git untuk mengirim commit ke GitHub?",o:["git push","git init","git clone"],a:0}
+];
+let qi=0,qs=0;
+function qShow(){
+  const box=$('#qBox');
+  if(qi>=QS.length){box.innerHTML=`<p class="msg">Skor akhir: ${qs}/${QS.length}</p><button class="btn" id="qAgain">Ulangi kuis</button>`;$('#qAgain').onclick=()=>{qi=0;qs=0;qShow();};return;}
+  const q=QS[qi];
+  box.innerHTML=`<p class="mu">Soal ${qi+1} dari ${QS.length}</p><p style="margin-top:6px"><b>${q.q}</b></p>`+q.o.map((o,i)=>`<button class="btn alt opt" data-o="${i}">${o}</button>`).join('')+'<p class="msg" id="qMsg"></p>';
+  $$('#qBox .opt').forEach(b=>b.onclick=()=>{
+    const ok=+b.dataset.o===q.a;if(ok)qs++;
+    $$('#qBox .opt').forEach(x=>{x.disabled=true;if(+x.dataset.o===q.a)x.style.background='var(--ok)',x.style.color='#15151a';});
+    if(!ok){b.style.background='var(--bad)';b.style.color='#15151a';}
+    $('#qMsg').textContent=ok?'Benar!':'Kurang tepat.';
+    setTimeout(()=>{qi++;qShow();},1100);
+  });
+}
+qShow();
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBcCmadG-Wg1N2oQyGZD7Y54OH3I_Vh1l4",
+  authDomain: "varellin-web.firebaseapp.com",
+  projectId: "varellin-web",
+  storageBucket: "varellin-web.firebasestorage.app",
+  messagingSenderId: "391302924000",
+  appId: "1:391302924000:web:b56cca3eda07da519c7285"
+};
+let auth,db,uid=null;
+const aMsg=t=>$('#aMsg').textContent=t||'';
+const ERR={'auth/invalid-credential':'Email atau password salah.','auth/invalid-email':'Format email tidak valid.','auth/email-already-in-use':'Email sudah terdaftar, coba Masuk.','auth/weak-password':'Password minimal 6 karakter.','auth/popup-closed-by-user':'Login Google dibatalkan.','auth/unauthorized-domain':'Domain web ini belum didaftarkan di Firebase (Authorized domains).'};
+function persist(){
+  if(!uid)return;
+  db.collection('users').doc(uid).set({tasks,jadwal}).catch(e=>alert('Gagal menyimpan: '+e.message));
+}
+if(firebaseConfig.apiKey.startsWith('ISI')){
+  aMsg('Config Firebase belum diisi. Buka index.html lalu isi firebaseConfig.');
+}else{
+  firebase.initializeApp(firebaseConfig);
+  auth=firebase.auth();db=firebase.firestore();
+  $('#fAuth').onsubmit=e=>{e.preventDefault();aMsg('');
+    const em=$('#aEmail').value.trim(),pw=$('#aPass').value;
+    const daftar=e.submitter&&e.submitter.dataset.mode==='daftar';
+    (daftar?auth.createUserWithEmailAndPassword(em,pw):auth.signInWithEmailAndPassword(em,pw)).catch(err=>aMsg(ERR[err.code]||err.message));
+  };
+  $('#gLogin').onclick=()=>{aMsg('');auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err=>aMsg(ERR[err.code]||err.message));};
+  $('#logout').onclick=()=>auth.signOut();
+  auth.onAuthStateChanged(async u=>{
+    uid=u?u.uid:null;tasks=[];jadwal=[];
+    $('#tugasLogin').hidden=!!u;$('#tugasApp').hidden=!u;$('#userBar').hidden=!u;
+    $('#who').textContent=u?(u.email||''):'';
+    if(u){
+      try{const d=(await db.collection('users').doc(uid).get()).data()||{};tasks=d.tasks||[];jadwal=d.jadwal||[];}
+      catch(e){alert('Gagal memuat data: '+e.message);}
+    }
+    renderTasks();renderJadwal();
+  });
+}
+</script>
+</body>
+</html>
