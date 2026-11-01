@@ -97,7 +97,7 @@ li.task{animation:pop .22s ease-out backwards}
 <header><nav role="tablist" aria-label="Menu">
   <b>Varellin</b>
   <button class="tab" role="tab" data-t="beranda">Beranda</button>
-  <button class="tab" role="tab" data-t="anime">Anime</button>
+  <button class="tab" role="tab" data-t="movie_series">Movie/Series</button>
   <button class="tab" role="tab" data-t="tugas">Tugas</button>
   <button class="tab" role="tab" data-t="game">Game</button>
   <button class="tgl" id="theme" aria-label="Ganti tema terang atau gelap"></button>
@@ -105,7 +105,7 @@ li.task{animation:pop .22s ease-out backwards}
 </nav></header>
 
 <main>
-<!-- BERANDA -->
+
 <section id="beranda">
   <div class="hero">
     <div class="bubble">Halo!</div>
@@ -114,21 +114,20 @@ li.task{animation:pop .22s ease-out backwards}
     <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">Python</span></div>
   </div>
   <div class="grid" style="margin-top:24px">
-    <button class="card" data-go="anime"><h3>Katalog Anime</h3><p class="mu">Sinopsis, karakter, dan rating pribadiku.</p></button>
+    <button class="card" data-go="movie_series"><h3>Katalog Movie/Series</h3><p class="mu">Sinopsis, karakter, dan rating pribadiku.</p></button>
     <button class="card" data-go="tugas"><h3>Jadwal &amp; Deadline</h3><p class="mu">Biar gak ada tugas yang kelewat.</p></button>
     <button class="card" data-go="game"><h3>Game Mini</h3><p class="mu">Tebak angka, suit, memory, dan kuis.</p></button>
   </div>
 </section>
 
-<!-- ANIME -->
-<section id="anime" hidden>
-  <h2>Katalog Anime</h2>
-  <p class="mu" style="margin-bottom:16px">Klik kartu buat lihat sinopsis dan karakter. Ganti isinya di array <code>ANIME</code> di bagian script.</p>
-  <div class="grid" id="animeGrid"></div>
+
+<section id="movie_series" hidden>
+  <h2>Katalog Movie/Series</h2>
+  <p class="mu" style="margin-bottom:16px">Klik kartu buat lihat sinopsis dan karakter. Ganti isinya di array <code>MOVIE/SERIES</code> di bagian script.</p>
+  <div class="grid" id="movie_seriesGrid"></div>
   <dialog id="dlg"><div id="dlgBody"></div><div style="margin-top:16px"><button class="btn alt" id="dlgClose">Tutup</button></div></dialog>
 </section>
 
-<!-- TUGAS -->
 <section id="tugas" hidden>
   <div id="tugasLogin" class="box">
     <h3>Masuk dulu ya</h3>
@@ -162,7 +161,6 @@ li.task{animation:pop .22s ease-out backwards}
   </div>
 </section>
 
-<!-- GAME -->
 <section id="game" hidden>
   <h2>Game Mini</h2>
   <div class="sub" id="gameTabs">
@@ -206,13 +204,13 @@ li.task{animation:pop .22s ease-out backwards}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-/* ====== Helper ====== */
+
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
 const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 
-/* ====== Navigasi ====== */
+
 const tabs=$$('.tab');
 function show(id){
   if(!$('#'+id))id='beranda';
@@ -224,7 +222,7 @@ tabs.forEach(t=>t.onclick=()=>show(t.dataset.t));
 $$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
 show(location.hash.slice(1)||'beranda');
 
-/* ====== Tema terang / gelap ====== */
+
 const themeBtn=$('#theme'),root=document.documentElement;
 const themeLabel=()=>themeBtn.textContent=root.dataset.theme==='dark'?'Mode terang':'Mode gelap';
 themeBtn.onclick=()=>{
@@ -235,11 +233,11 @@ themeBtn.onclick=()=>{
 };
 themeLabel();
 
-/* ====== Katalog Anime (EDIT DI SINI) ====== */
-const ANIME=[
- {judul:"That Time I Got Reincarnated as a Slime",tahun:2018,genre:"Isekai, Fantasi",rating:9,
-  sinopsis:"Satoru Mikami, pegawai biasa yang meninggal, terlahir kembali sebagai slime di dunia lain dan perlahan membangun negeri monster bersama kawan-kawannya.",
-  karakter:["Rimuru Tempest","Veldora","Shuna","Benimaru"]},
+
+const MOVIE_SERIES=[
+ {judul:"Loki",tahun:2018,genre:"Isekai, Fantasi",rating:10,
+  sinopsis:"Loki, Sang Dewa Kenakalan, mendadak ditangkap oleh Time Variance Authority (TVA) karena melanggar garis waktu suci, lalu terpaksa bekerja sama dengan mereka untuk memburu ancaman misterius yang mengacaukan multiverse.",
+  karakter:["Loki","Mobius M. Mobius","Sylvie","Kang / He Who Remains"]},
  {judul:"Sousou no Frieren",tahun:2023,genre:"Fantasi, Drama",rating:10,
   sinopsis:"Setelah party pahlawan mengalahkan Raja Iblis, penyihir elf Frieren menyadari betapa singkatnya waktu manusia dan memulai perjalanan memahami mereka.",
   karakter:["Frieren","Fern","Stark","Himmel"]},
@@ -247,15 +245,15 @@ const ANIME=[
   sinopsis:"Mata-mata, pembunuh bayaran, dan anak telepat pura-pura jadi keluarga demi misi rahasia, tanpa saling tahu identitas asli.",
   karakter:["Loid Forger","Yor Forger","Anya Forger","Bond"]}
 ];
-$('#animeGrid').innerHTML=ANIME.map((a,i)=>`<button class="card" data-i="${i}"><h3>${esc(a.judul)}</h3><p class="mu">${esc(a.genre)} (${a.tahun})</p><p class="star">Rating ${a.rating}/10</p></button>`).join('');
-$$('#animeGrid .card').forEach(b=>b.onclick=()=>{
-  const a=ANIME[b.dataset.i];
+$('#movie_seriesGrid').innerHTML=MOVIE_SERIES.map((a,i)=>`<button class="card" data-i="${i}"><h3>${esc(a.judul)}</h3><p class="mu">${esc(a.genre)} (${a.tahun})</p><p class="star">Rating ${a.rating}/10</p></button>`).join('');
+$$('#movie_seriesGrid .card').forEach(b=>b.onclick=()=>{
+  const a=MOVIE_SERIES[b.dataset.i];
   $('#dlgBody').innerHTML=`<h3>${esc(a.judul)}</h3><p class="star">Rating pribadi: ${a.rating}/10</p><p style="margin:12px 0">${esc(a.sinopsis)}</p><p class="mu">Karakter:</p><div class="chips" style="margin-top:6px">${a.karakter.map(k=>`<span class="chip">${esc(k)}</span>`).join('')}</div>`;
   $('#dlg').showModal();
 });
 $('#dlgClose').onclick=()=>$('#dlg').close();
 
-/* ====== Tracker Tugas ====== */
+
 let tasks=[];
 function renderTasks(){
   const list=[...tasks].sort((a,b)=>a.done-b.done||a.due.localeCompare(b.due));
@@ -278,7 +276,7 @@ $('#taskList').onclick=e=>{
 };
 renderTasks();
 
-/* ====== Jadwal Kuliah ====== */
+
 const HARI=['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 let jadwal=[];
 function renderJadwal(){
@@ -294,13 +292,13 @@ $('#fJadwal').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);
 $('#days').onclick=e=>{const id=e.target.dataset.jdel;if(!id)return;jadwal=jadwal.filter(j=>j.id!=id);persist();renderJadwal();};
 renderJadwal();
 
-/* ====== Game: pindah tab ====== */
+
 $$('#gameTabs button').forEach(b=>b.onclick=()=>{
   $$('#gameTabs button').forEach(x=>x.className='btn alt');b.className='btn';
   ['tebak','suit','memory','quiz'].forEach(g=>$('#g-'+g).hidden=g!==b.dataset.g);
 });
 
-/* ====== Game: Tebak angka ====== */
+
 let secret,tries;
 function tReset(){secret=1+Math.floor(Math.random()*100);tries=7;$('#tMsg').textContent='Aku udah pilih angka. Silakan tebak.';$('#tIn').value='';$('#tIn').disabled=false;}
 $('#fTebak').onsubmit=e=>{e.preventDefault();
@@ -311,7 +309,7 @@ $('#fTebak').onsubmit=e=>{e.preventDefault();
   $('#tIn').value='';};
 $('#tReset').onclick=tReset;tReset();
 
-/* ====== Game: Suit ====== */
+
 const OPS=[['Batu','🪨'],['Gunting','✂️'],['Kertas','📄']];
 const sc={m:0,s:0,k:0};
 $('#suitPick').innerHTML=OPS.map((o,i)=>`<button class="btn" data-s="${i}" aria-label="${o[0]}">${o[1]}</button>`).join('');
@@ -323,7 +321,7 @@ $('#suitPick').onclick=e=>{
   $('#sScore').textContent=`Menang ${sc.m} | Seri ${sc.s} | Kalah ${sc.k}`;
 };
 
-/* ====== Game: Memory card ====== */
+
 let mOpen=[],mMoves=0,mLock=false;
 function mInit(){
   const em=['🐱','🚀','🎧','🍜','⚡','🌸','🎮','☕'];
@@ -344,7 +342,7 @@ $('#memGrid').onclick=e=>{
 };
 $('#mReset').onclick=mInit;mInit();
 
-/* ====== Game: Kuis ====== */
+
 const QS=[
  {q:"Singkatan dari HTML?",o:["HyperText Markup Language","High Tech Modern Language","Hyper Transfer Mark Line"],a:0},
  {q:"Fungsi utama CSS?",o:["Mengatur tampilan halaman","Menyimpan database","Menjalankan server"],a:0},
