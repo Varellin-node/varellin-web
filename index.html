@@ -235,15 +235,15 @@ themeLabel();
 
 
 const MOVIE_SERIES=[
- {judul:"Loki",tahun:2018,genre:"Fiksi Ilmiah, Fantasi, Aksi & Misteri",rating:10,
+ {judul:"Loki Series",tahun:2021/2023,genre:"Fiksi Ilmiah, Fantasi, Aksi & Misteri",rating:10,
   sinopsis:"Loki, Sang Dewa Kenakalan, mendadak ditangkap oleh Time Variance Authority (TVA) karena melanggar garis waktu suci, lalu terpaksa bekerja sama dengan mereka untuk memburu ancaman misterius yang mengacaukan multiverse.",
   karakter:["Loki","Mobius M. Mobius","Sylvie","Kang / He Who Remains"]},
- {judul:"Avengers: Endgame",tahun:2023,genre:"Aksi, Fiksi Ilmiah, Drama & Epic Adventure",rating:10,
+ {judul:"Avengers: Endgame",tahun:2019,genre:"Aksi, Fiksi Ilmiah, Drama & Epic Adventure",rating:10,
   sinopsis:"Setelah peristiwa kehancuran besar yang disebabkan oleh Thanos, para Avengers yang tersisa harus bersatu kembali dan mengatur strategi terakhir untuk membalikkan keadaan demi mengembalikan kedamaian alam semesta.",
   karakter:["Banyak lah pokoknya"]},
- {judul:"Spy x Family",tahun:2022,genre:"Komedi, Aksi",rating:8,
-  sinopsis:"Mata-mata, pembunuh bayaran, dan anak telepat pura-pura jadi keluarga demi misi rahasia, tanpa saling tahu identitas asli.",
-  karakter:["Loid Forger","Yor Forger","Anya Forger","Bond"]}
+ {judul:"Spider-Man: Brand New Day",tahun:2022,genre:"Superhero, Aksi, Adventure, Fiksi Ilmiah",rating:8,
+  sinopsis:"Setelah dunia melupakan siapa dirinya, Peter Parker berjuang sendirian mendedikasikan hidupnya untuk melindungi Kota New York secara anonim, sambil menghadapi evolusi kekuatan super yang mengejutkan serta ancaman baru yang berbahaya.",
+  karakter:["Akelah lah pokok"]}
 ];
 $('#movie_seriesGrid').innerHTML=MOVIE_SERIES.map((a,i)=>`<button class="card" data-i="${i}"><h3>${esc(a.judul)}</h3><p class="mu">${esc(a.genre)} (${a.tahun})</p><p class="star">Rating ${a.rating}/10</p></button>`).join('');
 $$('#movie_seriesGrid .card').forEach(b=>b.onclick=()=>{
