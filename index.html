@@ -687,7 +687,7 @@ $('#fTanya').onsubmit=async e=>{
     try{localStorage.setItem('vr_qlast',Date.now())}catch(_){}
     f.reset();qMsg('Terkirim! Pesanmu tampil di sini setelah kujawab.',true);
     if(isOwner)loadInbox();
-  }catch(err){console.error(err);qMsg('Gagal mengirim: '+err.message);}
+  }catch(err){console.error(err);qMsg('Gagal mengirim/Login terlebih dahulu: '+err.message);}
 };
 $('#qaInbox').onclick=async e=>{
   const d=e.target.dataset;if(!db||!isOwner)return;
