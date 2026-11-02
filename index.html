@@ -91,6 +91,10 @@ dialog[open]::backdrop{animation:pop .22s ease-out}
 li.task{animation:pop .22s ease-out backwards}
 .swap,.swap *{transition:background-color .35s,color .35s,border-color .35s,box-shadow .35s!important}
 }
+li.task{flex-wrap:wrap}li.task .t{flex:1 1 180px;min-width:0}li.task>span{white-space:nowrap}
+.sum{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:22px}
+.sum .card b{display:block;font-size:1.35rem;letter-spacing:-.02em;line-height:1.3}
+.jact{display:inline-flex;gap:4px;margin-left:4px;vertical-align:middle}
 </style>
 </head>
 <body>
@@ -99,6 +103,7 @@ li.task{animation:pop .22s ease-out backwards}
   <button class="tab" role="tab" data-t="beranda">Beranda</button>
   <button class="tab" role="tab" data-t="movie_series">Movie/Series</button>
   <button class="tab" role="tab" data-t="tugas">Tugas</button>
+  <button class="tab" role="tab" data-t="keuangan">Keuangan</button>
   <button class="tab" role="tab" data-t="game">Game</button>
   <button class="tgl" id="theme" aria-label="Ganti tema terang atau gelap"></button>
   <span id="userBar" hidden><span id="who"></span><button class="btn alt sm" id="logout">Keluar</button></span>
@@ -145,7 +150,8 @@ li.task{animation:pop .22s ease-out backwards}
     <input name="mk" placeholder="Mata kuliah" required aria-label="Mata kuliah">
     <input name="nama" placeholder="Nama tugas" required aria-label="Nama tugas">
     <input name="due" type="date" required aria-label="Tanggal deadline">
-    <button class="btn">Tambah tugas</button>
+    <button class="btn" id="tSubmit">Tambah tugas</button>
+    <button type="button" class="btn alt" id="tCancel" hidden>Batal</button>
   </form>
   <ul id="taskList"></ul>
 
@@ -155,9 +161,33 @@ li.task{animation:pop .22s ease-out backwards}
     <input name="jam" placeholder="Jam (08.00-10.00)" required aria-label="Jam">
     <input name="mk" placeholder="Mata kuliah" required aria-label="Mata kuliah">
     <input name="ruang" placeholder="Ruang / lab" aria-label="Ruang">
-    <button class="btn">Tambah jadwal</button>
+    <button class="btn" id="jSubmit">Tambah jadwal</button>
+    <button type="button" class="btn alt" id="jCancel" hidden>Batal</button>
   </form>
   <div class="days" id="days"></div>
+  </div>
+</section>
+
+<section id="keuangan" hidden>
+  <div id="keuLogin" class="box">
+    <h3>Masuk dulu ya</h3>
+    <p class="mu" style="margin:6px 0 14px">Catatan keuangan disimpan di akunmu sendiri. Masuk lewat halaman Tugas.</p>
+    <button class="btn" data-go="tugas">Ke halaman masuk</button>
+  </div>
+  <div id="keuApp" hidden>
+  <h2>Catatan Keuangan</h2>
+  <div class="sum" id="sum"></div>
+  <form class="row" id="fKeu">
+    <select name="jenis" aria-label="Jenis"><option value="in">Pemasukan</option><option value="out">Pengeluaran</option><option value="move">Pindah saldo</option></select>
+    <select name="dompet" aria-label="Dompet"><option>Dana</option><option>Cash</option></select>
+    <input name="jml" placeholder="Nominal (10k, 25000)" inputmode="decimal" required aria-label="Nominal">
+    <input name="ket" placeholder="Keterangan" aria-label="Keterangan">
+    <input name="tgl" type="date" required aria-label="Tanggal">
+    <button class="btn" id="kSubmit">Catat</button>
+    <button type="button" class="btn alt" id="kCancel" hidden>Batal</button>
+  </form>
+  <p class="mu" style="margin:-8px 0 18px;font-size:.9rem">Nominal boleh ditulis 10k, 10rb, 1,5jt, atau 10000. Pindah saldo memindahkan uang dari dompet yang dipilih ke dompet satunya (misal tarik tunai Dana ke Cash). Saldo awal: catat sebagai pemasukan.</p>
+  <ul id="txList"></ul>
   </div>
 </section>
 
@@ -261,16 +291,21 @@ function renderTasks(){
   $('#taskList').innerHTML=list.length?list.map(t=>{
     const d=Math.round((new Date(t.due+'T00:00:00')-today)/864e5);
     const [txt,cls]=t.done?['Selesai','fine']:d<0?[`Telat ${-d} hari`,'late']:d===0?['Hari ini','soon']:d<=3?[`${d} hari lagi`,'soon']:[`${d} hari lagi`,'fine'];
-    return `<li class="task ${t.done?'done':''}"><input type="checkbox" style="width:auto" ${t.done?'checked':''} data-done="${t.id}" aria-label="Tandai selesai"><div class="t"><b>${esc(t.nama)}</b><div class="mu">${esc(t.mk)} | ${t.due}</div></div><span class="${cls}">${txt}</span><button class="btn alt sm" data-del="${t.id}" aria-label="Hapus tugas">Hapus</button></li>`;
+    return `<li class="task ${t.done?'done':''}"><input type="checkbox" style="width:auto" ${t.done?'checked':''} data-done="${t.id}" aria-label="Tandai selesai"><div class="t"><b>${esc(t.nama)}</b><div class="mu">${esc(t.mk)} | ${t.due}</div></div><span class="${cls}">${txt}</span><button class="btn alt sm" data-edit="${t.id}" aria-label="Edit tugas">Edit</button><button class="btn alt sm" data-del="${t.id}" aria-label="Hapus tugas">Hapus</button></li>`;
   }).join(''):'<p class="mu">Belum ada tugas. Tambah lewat form di atas.</p>';
 }
+let editT=null;
+function resetT(){editT=null;$('#fTask').reset();$('#tSubmit').textContent='Tambah tugas';$('#tCancel').hidden=true;}
+$('#tCancel').onclick=resetT;
 $('#fTask').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);
-  tasks.push({id:Date.now(),mk:f.get('mk'),nama:f.get('nama'),due:f.get('due'),done:false});
-  persist();e.target.reset();renderTasks();};
+  const d={mk:f.get('mk'),nama:f.get('nama'),due:f.get('due')};
+  if(editT)Object.assign(tasks.find(x=>x.id==editT),d);else tasks.push({id:Date.now(),done:false,...d});
+  persist();resetT();renderTasks();};
 $('#taskList').onclick=e=>{
   const d=e.target.dataset;
   if(d.done){const t=tasks.find(x=>x.id==d.done);t.done=!t.done;}
-  else if(d.del){tasks=tasks.filter(x=>x.id!=d.del);}
+  else if(d.edit){const t=tasks.find(x=>x.id==d.edit),f=$('#fTask');editT=t.id;f.mk.value=t.mk;f.nama.value=t.nama;f.due.value=t.due;$('#tSubmit').textContent='Simpan perubahan';$('#tCancel').hidden=false;f.scrollIntoView({behavior:'smooth',block:'center'});f.nama.focus();return;}
+  else if(d.del){if(!confirm('Hapus tugas ini?'))return;if(editT==d.del)resetT();tasks=tasks.filter(x=>x.id!=d.del);}
   else return;
   persist();renderTasks();
 };
@@ -283,15 +318,62 @@ function renderJadwal(){
   const hariIni=['Minggu',...HARI][new Date().getDay()];
   $('#days').innerHTML=HARI.map(h=>{
     const items=jadwal.filter(j=>j.hari===h).sort((a,b)=>a.jam.localeCompare(b.jam));
-    return `<div class="card ${h===hariIni?'today':''}"><h3>${h}${h===hariIni?' (hari ini)':''}</h3>${items.length?items.map(j=>`<p><b>${esc(j.jam)}</b> ${esc(j.mk)}${j.ruang?` <span class="mu">| ${esc(j.ruang)}</span>`:''} <button class="btn alt sm" data-jdel="${j.id}" aria-label="Hapus jadwal">x</button></p>`).join(''):'<p class="mu">Kosong</p>'}</div>`;
+    return `<div class="card ${h===hariIni?'today':''}"><h3>${h}${h===hariIni?' (hari ini)':''}</h3>${items.length?items.map(j=>`<p><b>${esc(j.jam)}</b> ${esc(j.mk)}${j.ruang?` <span class="mu">| ${esc(j.ruang)}</span>`:''} <span class="jact"><button class="btn alt sm" data-jedit="${j.id}" aria-label="Edit jadwal">Edit</button><button class="btn alt sm" data-jdel="${j.id}" aria-label="Hapus jadwal">x</button></span></p>`).join(''):'<p class="mu">Kosong</p>'}</div>`;
   }).join('');
 }
+let editJ=null;
+function resetJ(){editJ=null;$('#fJadwal').reset();$('#jSubmit').textContent='Tambah jadwal';$('#jCancel').hidden=true;}
+$('#jCancel').onclick=resetJ;
 $('#fJadwal').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);
-  jadwal.push({id:Date.now(),hari:f.get('hari'),jam:f.get('jam'),mk:f.get('mk'),ruang:f.get('ruang')});
-  persist();e.target.reset();renderJadwal();};
-$('#days').onclick=e=>{const id=e.target.dataset.jdel;if(!id)return;jadwal=jadwal.filter(j=>j.id!=id);persist();renderJadwal();};
+  const d={hari:f.get('hari'),jam:f.get('jam'),mk:f.get('mk'),ruang:f.get('ruang')};
+  if(editJ)Object.assign(jadwal.find(x=>x.id==editJ),d);else jadwal.push({id:Date.now(),...d});
+  persist();resetJ();renderJadwal();};
+$('#days').onclick=e=>{const d=e.target.dataset;
+  if(d.jedit){const j=jadwal.find(x=>x.id==d.jedit),f=$('#fJadwal');editJ=j.id;f.hari.value=j.hari;f.jam.value=j.jam;f.mk.value=j.mk;f.ruang.value=j.ruang||'';$('#jSubmit').textContent='Simpan perubahan';$('#jCancel').hidden=false;f.scrollIntoView({behavior:'smooth',block:'center'});f.jam.focus();}
+  else if(d.jdel){if(!confirm('Hapus jadwal ini?'))return;if(editJ==d.jdel)resetJ();jadwal=jadwal.filter(j=>j.id!=d.jdel);persist();renderJadwal();}};
 renderJadwal();
 
+
+let tx=[],editK=null;
+const rp=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
+const lain=d=>d==='Dana'?'Cash':'Dana';
+const hariIniStr=()=>{const n=new Date();return n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')};
+function parseNom(v){
+  let s=String(v).toLowerCase().replace(/rp|\s/g,''),m=1;
+  if(/(jt|juta)$/.test(s)){m=1e6;s=s.replace(/(jt|juta)$/,'');}
+  else if(/(rb|ribu|k)$/.test(s)){m=1e3;s=s.replace(/(rb|ribu|k)$/,'');}
+  s=m>1?s.replace(',','.'):s.replace(/\./g,'').replace(',','.');
+  const n=parseFloat(s)*m;
+  return isFinite(n)&&n>0?Math.round(n):NaN;
+}
+function resetK(){editK=null;const f=$('#fKeu');f.reset();f.tgl.value=hariIniStr();$('#kSubmit').textContent='Catat';$('#kCancel').hidden=true;}
+function renderKeu(){
+  const s={Dana:0,Cash:0};let mi=0,mo=0;
+  const n=new Date(),bln=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');
+  tx.forEach(t=>{
+    if(t.jenis==='in')s[t.dompet]+=t.jml;
+    else if(t.jenis==='out')s[t.dompet]-=t.jml;
+    else{s[t.dompet]-=t.jml;s[lain(t.dompet)]+=t.jml;}
+    if(t.tgl.startsWith(bln)){if(t.jenis==='in')mi+=t.jml;else if(t.jenis==='out')mo+=t.jml;}
+  });
+  $('#sum').innerHTML=`<div class="card"><span class="mu">Total saldo</span><b>${rp(s.Dana+s.Cash)}</b></div><div class="card"><span class="mu">Dana</span><b>${rp(s.Dana)}</b></div><div class="card"><span class="mu">Cash</span><b>${rp(s.Cash)}</b></div><div class="card"><span class="mu">Bulan ini</span><div class="fine"><b>+${rp(mi)}</b></div><div class="late"><b>-${rp(mo)}</b></div></div>`;
+  const list=[...tx].sort((a,b)=>b.tgl.localeCompare(a.tgl)||b.id-a.id);
+  $('#txList').innerHTML=list.length?list.map(t=>{
+    const mv=t.jenis==='move',nama=t.ket||(t.jenis==='in'?'Pemasukan':mv?'Pindah saldo':'Pengeluaran');
+    const [txt,cls]=t.jenis==='in'?['+'+rp(t.jml),'fine']:mv?[rp(t.jml),'mu']:['-'+rp(t.jml),'late'];
+    return `<li class="task"><div class="t"><b>${esc(nama)}</b><div class="mu">${t.tgl} | ${mv?esc(t.dompet)+' ke '+lain(t.dompet):esc(t.dompet)}</div></div><span class="${cls}">${txt}</span><button class="btn alt sm" data-kedit="${t.id}" aria-label="Edit catatan">Edit</button><button class="btn alt sm" data-kdel="${t.id}" aria-label="Hapus catatan">Hapus</button></li>`;
+  }).join(''):'<p class="mu">Belum ada catatan. Tambah lewat form di atas.</p>';
+}
+$('#kCancel').onclick=resetK;
+$('#fKeu').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target),jml=parseNom(f.get('jml'));
+  if(isNaN(jml)){alert('Nominal tidak valid. Contoh: 10k, 25000, 1,5jt');return;}
+  const d={jenis:f.get('jenis'),dompet:f.get('dompet'),jml,ket:f.get('ket').trim(),tgl:f.get('tgl')};
+  if(editK)Object.assign(tx.find(x=>x.id==editK),d);else tx.push({id:Date.now(),...d});
+  persist();resetK();renderKeu();};
+$('#txList').onclick=e=>{const d=e.target.dataset;
+  if(d.kedit){const t=tx.find(x=>x.id==d.kedit),f=$('#fKeu');editK=t.id;f.jenis.value=t.jenis;f.dompet.value=t.dompet;f.jml.value=t.jml;f.ket.value=t.ket||'';f.tgl.value=t.tgl;$('#kSubmit').textContent='Simpan perubahan';$('#kCancel').hidden=false;f.scrollIntoView({behavior:'smooth',block:'center'});f.jml.focus();}
+  else if(d.kdel){if(!confirm('Hapus catatan ini?'))return;if(editK==d.kdel)resetK();tx=tx.filter(x=>x.id!=d.kdel);persist();renderKeu();}};
+resetK();renderKeu();
 
 $$('#gameTabs button').forEach(b=>b.onclick=()=>{
   $$('#gameTabs button').forEach(x=>x.className='btn alt');b.className='btn';
@@ -379,7 +461,7 @@ const aMsg=t=>$('#aMsg').textContent=t||'';
 const ERR={'auth/invalid-credential':'Email atau password salah.','auth/invalid-email':'Format email tidak valid.','auth/email-already-in-use':'Email sudah terdaftar, coba Masuk.','auth/weak-password':'Password minimal 6 karakter.','auth/popup-closed-by-user':'Login Google dibatalkan.','auth/unauthorized-domain':'Domain web ini belum didaftarkan di Firebase (Authorized domains).'};
 function persist(){
   if(!uid)return;
-  db.collection('users').doc(uid).set({tasks,jadwal}).catch(e=>alert('Gagal menyimpan: '+e.message));
+  db.collection('users').doc(uid).set({tasks,jadwal,tx}).catch(e=>alert('Gagal menyimpan: '+e.message));
 }
 if(firebaseConfig.apiKey.startsWith('ISI')){
   aMsg('Config Firebase belum diisi. Buka index.html lalu isi firebaseConfig.');
@@ -394,14 +476,14 @@ if(firebaseConfig.apiKey.startsWith('ISI')){
   $('#gLogin').onclick=()=>{aMsg('');auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(err=>aMsg(ERR[err.code]||err.message));};
   $('#logout').onclick=()=>auth.signOut();
   auth.onAuthStateChanged(async u=>{
-    uid=u?u.uid:null;tasks=[];jadwal=[];
-    $('#tugasLogin').hidden=!!u;$('#tugasApp').hidden=!u;$('#userBar').hidden=!u;
+    uid=u?u.uid:null;tasks=[];jadwal=[];tx=[];resetT();resetJ();resetK();
+    $('#tugasLogin').hidden=!!u;$('#tugasApp').hidden=!u;$('#keuLogin').hidden=!!u;$('#keuApp').hidden=!u;$('#userBar').hidden=!u;
     $('#who').textContent=u?(u.email||''):'';
     if(u){
-      try{const d=(await db.collection('users').doc(uid).get()).data()||{};tasks=d.tasks||[];jadwal=d.jadwal||[];}
+      try{const d=(await db.collection('users').doc(uid).get()).data()||{};tasks=d.tasks||[];jadwal=d.jadwal||[];tx=d.tx||[];}
       catch(e){alert('Gagal memuat data: '+e.message);}
     }
-    renderTasks();renderJadwal();
+    renderTasks();renderJadwal();renderKeu();
   });
 }
 </script>
