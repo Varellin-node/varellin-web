@@ -371,7 +371,6 @@ $('#taskList').onclick=e=>{
 };
 renderTasks();
 
-
 const HARI=['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 let jadwal=[];
 function renderJadwal(){
@@ -394,7 +393,6 @@ $('#days').onclick=e=>{const d=e.target.dataset;
 renderJadwal();
 
 
-/* Sosial media: ganti url sesuai akunmu */
 const SOSMED=[
  {nama:'Instagram',url:'https://www.instagram.com/varllinn'},
  {nama:'GitHub',url:'https://github.com/Varellin-node'},
@@ -404,7 +402,6 @@ const SOS_ICON={Instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentC
 $('#sosmed').innerHTML=SOSMED.map(x=>`<a class="btn alt soc" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer">${SOS_ICON[x.nama]||''}${esc(x.nama)}</a>`).join('');
 $('#loginBtn').onclick=()=>show('tugas');
 
-/* ====== Pemutar musik (file mp3 ditaruh di folder musik/ di repo) ====== */
 const LAGU=[
  {judul:'Lalu Biru',artis:'Eleanor Whisper',file:'musik/lalu-biru.mp3',video:'musik/video/lalu-biru.mp4',warna:['#0b1f4d','#1e4fd8','#6fb1ff']},
  {judul:'Lampu Merah',artis:'The Lantis',file:'musik/lampu-merah.mp3',video:'musik/video/lampu-merah.mp4',warna:['#2a0508','#c1121f','#ff9f43']},
