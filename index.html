@@ -158,6 +158,7 @@ textarea{background:var(--sf);border:var(--bd);border-radius:var(--r);padding:8p
 .tanya{margin:32px 0 8px;max-width:640px}
 .tanya h2{font-size:1.6rem;margin-bottom:6px}
 .tanya form{display:grid;gap:10px;margin:14px 0}
+.tanya form[hidden]{display:none}
 .qa-act{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .qa{display:grid;gap:14px;margin-top:14px}
 .qa .card{display:grid;gap:8px;box-shadow:3px 3px 0 var(--ink)}
@@ -214,7 +215,11 @@ textarea{background:var(--sf);border:var(--bd);border-radius:var(--r);padding:8p
   <div class="tanya">
     <h2>Tanya atau kasih saran</h2>
     <p class="mu">Anonim: nama dan akunmu tidak disimpan. Pesanmu baru tampil di sini setelah kujawab.</p>
-    <form id="fTanya">
+    <div id="tanyaLogin" class="box" style="margin:14px 0">
+      <p class="mu" style="margin:0 0 12px">Masuk dulu untuk mengirim pesan. Pesanmu tetap anonim: akunmu tidak ikut disimpan di pesan.</p>
+      <button class="btn" data-go="masuk">Masuk untuk kirim pesan</button>
+    </div>
+    <form id="fTanya" hidden>
       <textarea name="pesan" maxlength="500" required placeholder="Tulis pertanyaan atau saranmu..." aria-label="Pertanyaan atau saran"></textarea>
       <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
       <div class="qa-act"><button class="btn">Kirim anonim</button><span class="msg" id="tMsg2" aria-live="polite"></span></div>
@@ -672,6 +677,7 @@ async function loadInbox(){
 $('#fTanya').onsubmit=async e=>{
   e.preventDefault();
   const f=e.target;if(f.website.value)return;
+  if(!uid){qMsg('Masuk dulu untuk mengirim pesan.');return;}
   const t=f.pesan.value.trim();if(!t)return;
   if(!db){qMsg('Firebase belum terhubung.');return;}
   let last=0;try{last=+localStorage.getItem('vr_qlast')||0}catch(_){}
@@ -735,7 +741,7 @@ if(firebaseConfig.apiKey.startsWith('ISI')){
       catch(e){alert('Gagal memuat data: '+e.message);}
     }
     renderTasks();renderJadwal();renderKeu();
-    isOwner=!!u&&u.uid===OWNER_UID;$('#qaOwner').hidden=!isOwner;if(isOwner)loadInbox();
+    $('#fTanya').hidden=!u;$('#tanyaLogin').hidden=!!u;isOwner=!!u&&u.uid===OWNER_UID;$('#qaOwner').hidden=!isOwner;if(isOwner)loadInbox();
     if(u&&justLogin){justLogin=false;show(ret||'beranda');ret=null;}
   });
 }
