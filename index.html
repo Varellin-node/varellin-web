@@ -179,8 +179,8 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--ac);heig
     <div class="social"><p class="mu">Akun Medsos ku</p><div class="chips" id="sosmed"></div></div>
   </div>
   <div class="grid" style="margin-top:24px">
-    <button class="card" data-go="movie_series"><h3>Katalog Movie/Series</h3><p class="mu">Sinopsis, karakter, dan rating pribadiku.</p></button>
-    <button class="card" data-go="tugas"><h3>Jadwal &amp; Deadline</h3><p class="mu">Biar gak ada tugas yang kelewat.</p></button>
+    <button class="card" data-go="movie_series"><h3>Katalog Movie/Series</h3><p class="mu">Pengalaman dan rating pribadiku.</p></button>
+    <button class="card" data-go="tugas"><h3>Jadwal &amp; Deadline</h3><p class="mu">Biar gak ada yang kelewat tugasnya.</p></button>
     <button class="card" data-go="game"><h3>Game Mini</h3><p class="mu">Tebak angka, suit, memory, dan kuis.</p></button>
   </div>
 </section>
@@ -188,7 +188,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--ac);heig
 
 <section id="movie_series" hidden>
   <h2>Katalog Movie/Series</h2>
-  <p class="mu" style="margin-bottom:16px">Klik kartu buat lihat sinopsis dan karakter.</p>
+  <p class="mu" style="margin-bottom:16px">Klik kotak buat lihat review pribadiku.</p>
   <div class="grid" id="movie_seriesGrid"></div>
   <dialog id="dlg"><div id="dlgBody"></div><div style="margin-top:16px"><button class="btn alt" id="dlgClose">Tutup</button></div></dialog>
 </section>
@@ -196,7 +196,7 @@ input[type=range]{padding:0;border:0;background:none;accent-color:var(--ac);heig
 <section id="tugas" hidden>
   <div id="tugasLogin" class="box">
     <h3>Masuk dulu ya</h3>
-    <p class="mu" style="margin:6px 0 14px">Tugas, Keuangan, dan jadwal disimpan di akunmu sendiri. Orang lain nggak bisa melihatnya.</p>
+    <p class="mu" style="margin:6px 0 14px">Tugas, Keuangan, dan jadwal disimpan di akunmu sendiri. Orang lain ngga bisa ngintip.</p>
     <form id="fAuth" style="display:grid;gap:10px">
       <input id="aEmail" type="email" placeholder="Email" required autocomplete="email" aria-label="Email">
       <div class="pw"><input id="aPass" type="password" placeholder="Password (min. 6 karakter)" required minlength="6" autocomplete="current-password" aria-label="Password"><button type="button" class="pwb" id="pwToggle" aria-label="Tampilkan password" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
