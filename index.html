@@ -153,6 +153,17 @@ nav .i-close{display:none}nav.open .i-open{display:none}nav.open .i-close{displa
  .tabs .tab[aria-selected=true]{background:var(--hl)}
  #musicBtn .lbl,#who{display:none}
 }
+textarea{background:var(--sf);border:var(--bd);border-radius:var(--r);padding:8px 12px;width:100%;min-height:96px;resize:vertical;font:inherit;color:inherit}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.tanya{margin:32px 0 8px;max-width:640px}
+.tanya h2{font-size:1.6rem;margin-bottom:6px}
+.tanya form{display:grid;gap:10px;margin:14px 0}
+.qa-act{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qa{display:grid;gap:14px;margin-top:14px}
+.qa .card{display:grid;gap:8px;box-shadow:3px 3px 0 var(--ink)}
+.qa .q{font-weight:700}
+.qa .a{border-left:4px solid var(--ac);padding-left:10px}
+.qa small{color:var(--mu)}
 </style>
 </head>
 <body>
@@ -200,6 +211,18 @@ nav .i-close{display:none}nav.open .i-open{display:none}nav.open .i-close{displa
     <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">Python</span></div>
     <div class="social"><p class="mu">Akun Medsos ku</p><div class="chips" id="sosmed"></div></div>
   </div>
+  <div class="tanya">
+    <h2>Tanya atau kasih saran</h2>
+    <p class="mu">Anonim: nama dan akunmu tidak disimpan. Pesanmu baru tampil di sini setelah kujawab.</p>
+    <form id="fTanya">
+      <textarea name="pesan" maxlength="500" required placeholder="Tulis pertanyaan atau saranmu..." aria-label="Pertanyaan atau saran"></textarea>
+      <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="qa-act"><button class="btn">Kirim anonim</button><span class="msg" id="tMsg2" aria-live="polite"></span></div>
+    </form>
+    <div class="qa" id="qaList"></div>
+    <div id="qaOwner" hidden style="margin-top:28px"><h3>Kotak masuk (cuma kamu yang lihat)</h3><div class="qa" id="qaInbox"></div></div>
+  </div>
+
   <div class="grid" style="margin-top:24px">
     <button class="card" data-go="movie_series"><h3>Katalog Movie/Series</h3><p class="mu">Pengalaman dan rating pribadiku.</p></button>
     <button class="card" data-go="tugas"><h3>Jadwal &amp; Deadline</h3><p class="mu">Biar gak ada yang kelewat tugasnya.</p></button>
@@ -626,6 +649,50 @@ const firebaseConfig = {
   appId: "1:391302924000:web:b56cca3eda07da519c7285"
 };
 let auth,db,uid=null;
+/* UID akunmu (Firebase Console > Authentication > Users). Dipakai untuk menampilkan kotak masuk. */
+const OWNER_UID='ISI_UID_KAMU';
+let isOwner=false;
+const qMsg=(t,ok)=>{const m=$('#tMsg2');m.textContent=t||'';m.className='msg '+(ok?'fine':'late');};
+const tglQ=d=>d.waktu&&d.waktu.toDate?d.waktu.toDate().toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'';
+async function loadQA(){
+  try{
+    const s=await db.collection('pesan').where('dijawab','==',true).limit(50).get();
+    const list=s.docs.map(x=>x.data()).sort((a,b)=>((b.waktu&&b.waktu.seconds)||0)-((a.waktu&&a.waktu.seconds)||0));
+    $('#qaList').innerHTML=list.length?list.map(d=>`<div class="card"><div class="q">${esc(d.pesan)}</div><div class="a">${esc(d.jawaban)}</div><small>${tglQ(d)}</small></div>`).join(''):'<p class="mu">Belum ada yang dijawab. Jadi yang pertama!</p>';
+  }catch(e){console.error(e);$('#qaList').innerHTML='<p class="mu">Tanya jawab belum bisa dimuat.</p>';}
+}
+async function loadInbox(){
+  if(!isOwner)return;
+  try{
+    const s=await db.collection('pesan').orderBy('waktu','desc').limit(100).get();
+    $('#qaInbox').innerHTML=s.docs.length?s.docs.map(x=>{const d=x.data(),id=x.id;
+      return `<div class="card"><div class="q">${esc(d.pesan)}</div><small>${tglQ(d)} | ${d.dijawab?'sudah tampil di beranda':'belum dijawab'}</small><textarea id="a-${id}" maxlength="1000" placeholder="Tulis jawabanmu..." aria-label="Jawaban">${esc(d.jawaban||'')}</textarea><div class="qa-act"><button class="btn sm" data-ans="${id}">${d.dijawab?'Simpan jawaban':'Jawab & tampilkan'}</button>${d.dijawab?`<button class="btn alt sm" data-hide="${id}">Sembunyikan</button>`:''}<button class="btn alt sm" data-qdel="${id}">Hapus</button></div></div>`;}).join(''):'<p class="mu">Belum ada pesan masuk.</p>';
+  }catch(e){console.error(e);$('#qaInbox').innerHTML='<p class="mu">Gagal memuat kotak masuk: '+esc(e.message)+'</p>';}
+}
+$('#fTanya').onsubmit=async e=>{
+  e.preventDefault();
+  const f=e.target;if(f.website.value)return;
+  const t=f.pesan.value.trim();if(!t)return;
+  if(!db){qMsg('Firebase belum terhubung.');return;}
+  let last=0;try{last=+localStorage.getItem('vr_qlast')||0}catch(_){}
+  if(Date.now()-last<30000){qMsg('Tunggu sebentar sebelum kirim lagi.');return;}
+  try{
+    await db.collection('pesan').add({pesan:t,jawaban:'',dijawab:false,waktu:firebase.firestore.FieldValue.serverTimestamp()});
+    try{localStorage.setItem('vr_qlast',Date.now())}catch(_){}
+    f.reset();qMsg('Terkirim! Pesanmu tampil di sini setelah kujawab.',true);
+    if(isOwner)loadInbox();
+  }catch(err){console.error(err);qMsg('Gagal mengirim: '+err.message);}
+};
+$('#qaInbox').onclick=async e=>{
+  const d=e.target.dataset;if(!db||!isOwner)return;
+  try{
+    if(d.ans){const v=$('#a-'+d.ans).value.trim();await db.collection('pesan').doc(d.ans).update({jawaban:v,dijawab:!!v});}
+    else if(d.hide){await db.collection('pesan').doc(d.hide).update({dijawab:false});}
+    else if(d.qdel){if(!confirm('Hapus pesan ini?'))return;await db.collection('pesan').doc(d.qdel).delete();}
+    else return;
+    loadInbox();loadQA();
+  }catch(err){alert('Gagal: '+err.message);}
+};
 const aMsg=(t,ok)=>{const m=$('#aMsg');m.textContent=t||'';m.className='msg '+(ok?'fine':'late');if(t&&!ok)justLogin=false;};
 const ERR={'auth/missing-email':'Isi email dulu.','auth/too-many-requests':'Terlalu banyak percobaan, tunggu sebentar lalu coba lagi.','auth/invalid-credential':'Email atau password salah.','auth/invalid-email':'Format email tidak valid.','auth/email-already-in-use':'Email sudah terdaftar, coba Masuk.','auth/weak-password':'Password minimal 6 karakter.','auth/popup-closed-by-user':'Login Google dibatalkan.','auth/unauthorized-domain':'Domain web ini belum didaftarkan di Firebase (Authorized domains).'};
 function persist(){
@@ -644,7 +711,7 @@ if(firebaseConfig.apiKey.startsWith('ISI')){
   aMsg('Config Firebase belum diisi. Buka index.html lalu isi firebaseConfig.');
 }else{
   firebase.initializeApp(firebaseConfig);
-  auth=firebase.auth();db=firebase.firestore();
+  auth=firebase.auth();db=firebase.firestore();loadQA();
   $('#fAuth').onsubmit=e=>{e.preventDefault();aMsg('');justLogin=true;
     const em=$('#aEmail').value.trim(),pw=$('#aPass').value;
     const daftar=e.submitter&&e.submitter.dataset.mode==='daftar';
@@ -668,6 +735,7 @@ if(firebaseConfig.apiKey.startsWith('ISI')){
       catch(e){alert('Gagal memuat data: '+e.message);}
     }
     renderTasks();renderJadwal();renderKeu();
+    isOwner=!!u&&u.uid===OWNER_UID;$('#qaOwner').hidden=!isOwner;if(isOwner)loadInbox();
     if(u&&justLogin){justLogin=false;show(ret||'beranda');ret=null;}
   });
 }
