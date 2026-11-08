@@ -1,4 +1,4 @@
-const CACHE = 'varellin-v2';   // naikkan angka ini (v3, v4, ...) tiap kali kamu deploy perubahan besar
+const CACHE = 'varellin-v2';   // naikkan angka versi jika update (sekarang v2, nanti lanjut v3)
 const ASSETS = [
   './',
   './index.html',
