@@ -1,8 +1,8 @@
 const CACHE_NAME = 'varellin-cache-v1';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/og-image.png'
+  './',
+  './index.html',
+  './og-image.png'
 ];
 
 self.addEventListener('install', (e) => {
