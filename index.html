@@ -220,6 +220,12 @@ li.task .t b{overflow-wrap:anywhere}
   .sum .card b{font-size:1.15rem}
   .days{grid-template-columns:1fr}
 }
+
+
+.prog-container { margin-bottom: 22px; }
+.prog-head { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.9rem; font-weight: 700; }
+.prog-bg { width: 100%; height: 16px; background: var(--sf2); border: var(--bd); border-radius: 8px; overflow: hidden; box-shadow: 2px 2px 0 var(--ink); }
+.prog-fill { height: 100%; width: 0%; background: var(--ac); transition: width 0.3s ease; }
 </style>
 </head>
 <body>
@@ -264,7 +270,7 @@ li.task .t b{overflow-wrap:anywhere}
   <div class="hero">
     <div class="bubble">HiiHuu!</div>
     <h1>Aku Varellin.</h1>
-    
+
     <p class="mu">Lagi coba-coba aja, bisa cek-cek kalau mau kepoin. Hihi<br>Kalau mau lebih lengkap bisa login dulu yaa</p>
     <div class="chips"><span class="chip">HTML</span><span class="chip">CSS</span><span class="chip">JavaScript</span><span class="chip">Python</span></div>
     <div class="social"><p class="mu">Akun Medsos ku</p><div class="chips" id="sosmed"></div></div>
@@ -286,7 +292,7 @@ li.task .t b{overflow-wrap:anywhere}
   </div>
 
   <div class="grid" style="margin-top:24px">
-    
+
     <button class="card" data-go="movie_series"><h3>Katalog Movie/Series<span class="badge-free">Tanpa Login</span></h3><p class="mu">Pengalaman dan rating pribadiku.</p></button>
     <button class="card" data-go="tugas"><h3>Jadwal &amp; Deadline</h3><p class="mu">Biar gak ada yang kelewat tugasnya.</p></button>
     <button class="card" data-go="game"><h3>Game Mini<span class="badge-free">Tanpa Login</span></h3><p class="mu">Tebak angka, suit, memory, dan kuis.</p></button>
@@ -326,7 +332,22 @@ li.task .t b{overflow-wrap:anywhere}
     <button class="btn" data-go="masuk">Ke halaman masuk</button>
   </div>
   <div id="tugasApp" hidden>
-  <h2>Tracker Deadline</h2>
+  
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px">
+    <h2 style="margin-bottom:0">Tracker Deadline</h2>
+    <button class="btn alt sm" id="exportTasks">📥 Export JSON</button>
+  </div>
+
+  <div id="taskProgressBox" class="prog-container" hidden>
+    <div class="prog-head">
+      <span>Progres Tugas</span>
+      <span id="taskProgressText">0%</span>
+    </div>
+    <div class="prog-bg">
+      <div id="taskProgressBar" class="prog-fill"></div>
+    </div>
+  </div>
+
   <form class="row" id="fTask">
     <input name="mk" placeholder="Mata kuliah" required aria-label="Mata kuliah">
     <input name="nama" placeholder="Nama tugas" required aria-label="Nama tugas">
@@ -356,7 +377,12 @@ li.task .t b{overflow-wrap:anywhere}
     <button class="btn" data-go="masuk">Ke halaman masuk</button>
   </div>
   <div id="keuApp" hidden>
-  <h2>Catatan Keuangan</h2>
+  
+  <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px">
+    <h2 style="margin-bottom:0">Catatan Keuangan</h2>
+    <button class="btn alt sm" id="exportKeu">📥 Export JSON</button>
+  </div>
+  
   <div class="sum" id="sum"></div>
   <form class="row" id="fKeu">
     <select name="jenis" aria-label="Jenis"><option value="in">Pemasukan</option><option value="out">Pengeluaran</option><option value="move">Pindah saldo</option></select>
@@ -479,6 +505,22 @@ let tasks=[];
 function renderTasks(){
   const list=[...tasks].sort((a,b)=>a.done-b.done||a.due.localeCompare(b.due));
   const today=new Date();today.setHours(0,0,0,0);
+  
+  const total = tasks.length;
+  const done = tasks.filter(t => t.done).length;
+  const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+  const pbBox = $('#taskProgressBox');
+  
+  if (total > 0) {
+    pbBox.hidden = false;
+    $('#taskProgressText').textContent = pct + '% (' + done + '/' + total + ')';
+    const pb = $('#taskProgressBar');
+    pb.style.width = pct + '%';
+    pb.style.background = pct === 100 ? 'var(--fine)' : 'var(--ac)';
+  } else {
+    pbBox.hidden = true;
+  }
+  
   $('#taskList').innerHTML=list.length?list.map(t=>{
     const d=Math.round((new Date(t.due+'T00:00:00')-today)/864e5);
     const [txt,cls]=t.done?['Selesai','fine']:d<0?[`Telat ${-d} hari`,'late']:d===0?['Hari ini','soon']:d<=3?[`${d} hari lagi`,'soon']:[`${d} hari lagi`,'fine'];
@@ -634,6 +676,24 @@ $('#txList').onclick=e=>{const d=e.target.dataset;
   if(d.kedit){const t=tx.find(x=>x.id==d.kedit),f=$('#fKeu');editK=t.id;f.jenis.value=t.jenis;f.dompet.value=t.dompet;f.jml.value=t.jml;f.ket.value=t.ket||'';f.tgl.value=t.tgl;$('#kSubmit').textContent='Simpan perubahan';$('#kCancel').hidden=false;f.scrollIntoView({behavior:'smooth',block:'center'});f.jml.focus();}
   else if(d.kdel){if(!confirm('Hapus catatan ini?'))return;if(editK==d.kdel)resetK();tx=tx.filter(x=>x.id!=d.kdel);persist();renderKeu();}};
 resetK();renderKeu();
+
+function downloadJSON(data, filename) {
+  if (!data || data.length === 0) {
+    alert('Belum ada data untuk di-export.');
+    return;
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+$('#exportTasks').onclick = () => downloadJSON(tasks, `Varellin-Tugas-${hariIniStr()}.json`);
+$('#exportKeu').onclick = () => downloadJSON(tx, `Varellin-Keuangan-${hariIniStr()}.json`);
 
 $$('#gameTabs button').forEach(b=>b.onclick=()=>{
   $$('#gameTabs button').forEach(x=>x.className='btn alt');b.className='btn';
