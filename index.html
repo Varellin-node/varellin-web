@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Varellin | Web Pribadi</title>
 
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
 <meta name="description" content="Web pribadi Varellin — katalog film, tracker tugas, catatan keuangan, dan game mini. Game & katalog bisa dimainkan tanpa login!">
 <meta name="author" content="Varellin">
 <meta name="robots" content="index, follow">
@@ -876,6 +880,14 @@ if(firebaseConfig.apiKey.startsWith('ISI')){
     if(u&&justLogin){justLogin=false;show(ret||'beranda');ret=null;}
   });
 }
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .catch(err => console.log('Service worker gagal:', err));
+  });
+}
+
 </script>
 </body>
 </html>
