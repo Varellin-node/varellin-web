@@ -2,7 +2,7 @@
   "name": "Varellin | Web Pribadi",
   "short_name": "Varellin",
   "description": "Web pribadi Varellin — katalog film, tracker tugas, catatan keuangan, dan game mini.",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f2f3f0",
   "theme_color": "#2f4bff",
