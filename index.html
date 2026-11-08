@@ -441,13 +441,14 @@ li.task .t b{overflow-wrap:anywhere}
   </div>
 </section>
 </main>
-<footer>Dibuat sendiri oleh Varellin. Data tugas, Keuangan, &amp; jadwal tersimpan di akun masing-masing.</footer>
+<footer>Dibuat sendiri oleh Varellin. Data tugas, Keuangan, &amp; jadwal tersimpan di akun masing-masing. Web ini memakai Google Analytics untuk statistik kunjungan.</footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics-compat.js"></script>
 <script>
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -779,7 +780,8 @@ const firebaseConfig = {
   projectId: "varellin-web",
   storageBucket: "varellin-web.firebasestorage.app",
   messagingSenderId: "391302924000",
-  appId: "1:391302924000:web:b56cca3eda07da519c7285"
+  appId: "1:391302924000:web:b56cca3eda07da519c7285",
+  measurementId: "G-NVJBSSR20F"
 };
 
 const RECAPTCHA_SITE_KEY = '';
@@ -848,6 +850,7 @@ if(firebaseConfig.apiKey.startsWith('ISI')){
   aMsg('Config Firebase belum diisi. Buka index.html lalu isi firebaseConfig.');
 }else{
   firebase.initializeApp(firebaseConfig);
+  try{firebase.analytics();}catch(e){console.warn("Analytics tidak aktif:",e);}
 
   if(RECAPTCHA_SITE_KEY && typeof firebase.appCheck === 'function'){
     firebase.appCheck().activate(RECAPTCHA_SITE_KEY, true);

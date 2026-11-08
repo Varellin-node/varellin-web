@@ -1,4 +1,4 @@
-const CACHE = 'varellin-v2';   // naikkan angka versi jika update (sekarang v2, nanti lanjut v3)
+const CACHE = 'varellin-v3';   // naikkan angka ini saat update jadi (v2,v3,v4)
 const ASSETS = [
   './',
   './index.html',
@@ -27,7 +27,6 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== location.origin) return;      
   if (url.pathname.includes('/musik/')) return;    
 
-  
   if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req)
