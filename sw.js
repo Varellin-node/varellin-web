@@ -1,4 +1,4 @@
-const CACHE = 'varellin-v3';   // naikkan angka ini saat update jadi (v2,v3,v4)
+const CACHE = 'varellin-v4';   // naikkan angka ini saat update jadi (v2,v3,v4)
 const ASSETS = [
   './',
   './index.html',
